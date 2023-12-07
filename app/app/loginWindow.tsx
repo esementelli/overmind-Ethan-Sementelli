@@ -7,10 +7,10 @@ export default function LoginWindow(
     setUpProfile:  (form: FormData) => Promise<void>;
   }
 ) {
+  // TODO #1: Add a state variable to store the current error message
+  const [errors, setErrors] = useState("")
 
-  /* 
-    TODO #1: Add a state variable to store the current error message
-  */
+
 
   /*
     This function is called to set up the profile of the new user. It is called
@@ -19,22 +19,23 @@ export default function LoginWindow(
     @param form - FormData object containing the username and name of the new user
   */
   const onSubmit = async (form: FormData) => {
-    /* 
-      TODO #3: Set the error state to an empty string
-    */
+    // TODO #3: Set the error state to an empty string
+    setErrors('');
 
-    /* 
-      TODO #4: Set up a try catch block to call the setUpProfile() function and set the error state
-      if an error is thrown
+    try {
+      const settingUpProfile = await setUpProfile(form)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log("here")
 
-      HINT: 
-        - Use the setUpProfile() function to set up the user's profile and log them in
-        - In the catch block, set the error state to the error message (error.message)
-    */
+        setErrors(error.message)
+      }
+    }
+  
   }
 
   return (
-    <form action={onSubmit} >
+    <form action={onSubmit}>
       <div className='flex flex-col space-y-3'>
         <p className='text-xs font-bold uppercase text-neutral-100'>
           Create Account
@@ -63,12 +64,8 @@ export default function LoginWindow(
             Create Account
           </button>
           <p className="text-red-500">
-            {/* 
-              TODO #2: Display the error message if it is not an empty string using the error state variable
-            */}
-            {
-              "PLACEHOLDER"
-            }
+            {/* TODO #2: Display the error message if it is not an empty string using the error state variable */}
+            {errors}
           </p>
         </div>
       </div>

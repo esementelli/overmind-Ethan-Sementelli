@@ -1,3 +1,4 @@
+
 import './globals.css';
 import { Inter } from 'next/font/google';
 import Accounts from '@/components/Accounts';
@@ -54,17 +55,36 @@ export default async function RootLayout({
     @param form - FormData object containing the username and name of the new user
   */
   const setUpProfile = async (form: FormData) => {
+
+    'use server';
+
+
+  
     /*
       TODO #1: Indicate that this function is a server function by adding 'use server';
     */
+   
+      
 
     /*
       TODO #2: Create the new User object with a username, name, and privateKey
+
+      
     
       HINT: 
         - 
         - Use the newPrivateKey() function to generate a new private key for the user
     */
+
+        const key = newPrivateKey();
+
+        const newUser = {
+          username: form.get('username') as string,
+          name: form.get('name') as string,
+          imgSrc: me?.imgSrc as string,
+          privateKey:  key
+        }
+       
 
     /* 
       TODO #3: Store the user in the local account cache
@@ -72,6 +92,8 @@ export default async function RootLayout({
       HINT: Use the storeUser() function to store the user
     */
 
+      const storedUser = storeUser(newUser);
+     
     /* 
       TODO #4: Set up a try catch block to create the user's profile and log them in if successful.
 
@@ -83,6 +105,23 @@ export default async function RootLayout({
           from the local account cache. Then, throw the error to be caught by the catch block in
           the loginWindow.tsx file.
     */
+
+          try {
+            storedUser;
+            console.log(newUser)
+            await createProfile(newUser);
+            await login(newUser);
+          } catch (error) {
+            dropUser(newUser)
+            // In the catch block, use the dropUser() function to remove the user
+            // from the local account cache. Then, throw the error to be caught by the catch block
+            // in the loginWindow.tsx file.
+            if (error instanceof Error) {
+              // const droppingUser = dropUser(newUser)
+              throw error;
+          } 
+        
+        }
   }
 
   if (!me) {
